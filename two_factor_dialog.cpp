@@ -18,6 +18,6 @@ two_factor_dialog::~two_factor_dialog()
 }
 
 void two_factor_dialog::two_factor_submit() {
-    qDebug() << "TODO";
     p->two_factor_submit(ui->two_factor_input->text());
+    this->close();
 }

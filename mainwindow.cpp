@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::handleLoginButton() {
-    auth = new Authenticator(this);
+    auth = new Authenticator();
+    connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
     if (!res) {
         qDebug() << "empty username/password OR other error!!!";

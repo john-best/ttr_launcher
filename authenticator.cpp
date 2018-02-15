@@ -1,10 +1,9 @@
 #include "Authenticator.h"
 
 
-Authenticator::Authenticator(QWidget *parent)
+Authenticator::Authenticator()
 {
    networkManager = new QNetworkAccessManager(this);
-   p = parent;
 }
 
 Authenticator::~Authenticator() {
@@ -62,10 +61,10 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
     QJsonObject json_object = QJsonDocument::fromJson(data).object();
     reply->deleteLater();
 
+    qDebug() << QString(data);
     // api documentation mentions that there should always be a success key/value pair.
     if (!json_object.contains("success")) {
         qDebug() << "key/value pair \"success\" is missing! stopping...";
-        qDebug() << QString(QJsonDocument(json_object).toJson());
         return;
     }
 
@@ -94,7 +93,8 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // failure
     if (res_success.toString() == "false") {
-        qDebug() << "invalid credentials or servers are down!";
+        qDebug() << "Unable to login!";
+        qDebug() << json_object["banner"].toString();
         return;
     }
 }
@@ -105,7 +105,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 void Authenticator::two_factor(std::string player_token) {
     if (player_token.compare("") == 0) {
         qDebug() << "need player token to proceed, window popup where??";
-        //p->open_two_factor_dialog();
+        emit two_factor_request();
         return;
     }
 

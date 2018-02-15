@@ -14,12 +14,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void open_two_factor_dialog();
+
     void two_factor_submit(QString qstr);
     ~MainWindow();
 
 private slots:
+    void open_two_factor_dialog();
     void handleLoginButton();
+
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;
