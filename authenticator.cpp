@@ -5,6 +5,10 @@ Authenticator::Authenticator()
    networkManager = new QNetworkAccessManager(this);
 }
 
+Authenticator::~Authenticator() {
+    delete networkManager;
+}
+
 /*
  * login(username, password);
  * Attempts to access the login servers with authentication. Returns a QPair<bool, QString>
@@ -14,8 +18,7 @@ Authenticator::Authenticator()
  */
 bool Authenticator::login(std::string username, std::string password) {
 
-    if (username.compare("") == 0) { return false; }
-    if (password.compare("") == 0) { return false; }
+    if (username.length() == 0 || password.length() == 0) { return false; }
 
     // ttr api login
     QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/login?format=json");
@@ -33,18 +36,19 @@ bool Authenticator::login(std::string username, std::string password) {
 
     // post!
     networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handleLoginResponse(QNetworkReply*)));
+    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
 
     return true;
 }
 
-/* handle the login response: there should be three responses
- * success = true - the user should be able to login (or delayed login)
- * success = false - something went wrong
- * success = partial - need authorization token
+/* handle the network response: there should be four responses
+ * success = true - the user got a cookie and can now play the game
+ * success = false - something went wrong (wrong username/password or something else)
+ * success = partial - need authorization token to get a cookie
+ * success = delayed - need to wait in queue to get a cookie
  */
-void Authenticator::handleLoginResponse(QNetworkReply *reply) {
-    qDebug() << "got a network response!";
+void Authenticator::handle_auth_response(QNetworkReply *reply) {
+    qDebug() << "got an authentication response!";
 
     // if there is an error there's no need to continue
     if (reply->error()) {
@@ -55,7 +59,7 @@ void Authenticator::handleLoginResponse(QNetworkReply *reply) {
     QByteArray data = reply->readAll();
     QJsonObject json_object = QJsonDocument::fromJson(data).object();
 
-    // api documentation mentions that
+    // api documentation mentions that there should always be a success key/value pair.
     if (!json_object.contains("success")) {
         qDebug() << "key/value pair \"success\" is missing! stopping...";
         return;
@@ -63,35 +67,87 @@ void Authenticator::handleLoginResponse(QNetworkReply *reply) {
 
     QJsonValue res_success = json_object["success"];
     QJsonValue res_token;
-    int status = -1;
 
     // user can immediately log in with given playcookie
-    if (res_success.toString().compare("true") == 0) {
+    if (res_success.toString() == "true") {
         res_token = json_object["cookie"];
-        status = 0;
     }
 
     // user needs to go through 2-factor authentication
-    if (res_success.toString().compare("partial") == 0) {
-        res_token = json_object["responseToken"];
-        status = 1;
+    if (res_success.toString() == "partial") {
+        two_factor(json_object["responseToken"].toString().toStdString());
     }
 
     // delayed response
-    if (res_success.toString().compare("delayed") == 0) {
-        res_token = json_object["queueToken"];
-        status = 2;
+    if (res_success.toString() == "delayed") {
+        delayed_login(json_object["queueToken"].toString().toStdString());
     }
 
     // failure
-    if (res_success.toString().compare("false") == 0) {
-        res_token = json_object["success"];
-        status = 3;
+    if (res_success.toString() == "false") {
+        return;
     }
 
-    switch(status) {
-    case 0:
-
-    }
     reply->deleteLater();
+}
+
+/* two_factor(server_token, player_token);
+ * posts to server the appToken (given by server previously) and the authToken (given by user)
+ */
+void Authenticator::two_factor(std::string server_token, std::string player_token) {
+    if (player_token.compare("") == 0) {
+        qDebug() << "need player token to proceed, window popup where??";
+        // TODO: window popup for 2 factor
+        return;
+    }
+
+    // ttr api
+    QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/login?format=json");
+
+    // build the post data
+    QUrlQuery postData;
+    postData.addQueryItem("appToken", QString::fromStdString(player_token));
+    postData.addQueryItem("authToken", QString::fromStdString(server_token));
+
+    // set up request
+    QNetworkRequest request(apiUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+
+    // post!
+    networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
+}
+
+/*
+ * delayed_login(queue_token)
+ * sends a request every x seconds given the queue token
+ * to let the player in as soon as possible without making
+ * the server angry at us for requesting so many times
+ */
+void Authenticator::delayed_login(std::string queue_token) {
+
+    // TODO: add a delay per 3-5 seconds for wait in between delayed login attempts.
+
+    // ttr api
+    QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/login?format=json");
+
+    // build the post data
+    QUrlQuery postData;
+    postData.addQueryItem("queueToken", QString::fromStdString(queue_token));
+
+    // set up request
+    QNetworkRequest request(apiUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+
+    // post!
+    networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
+}
+
+/* launch the game with environments set */
+void Authenticator::launch_game(std::string player_cookie) {
+    // TODO: get the game to launch
+    return;
 }
