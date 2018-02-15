@@ -15,21 +15,23 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::handleLoginButton() {
-    auth = new Authenticator();
+    auth = new Authenticator(this);
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
     if (!res) {
         qDebug() << "empty username/password OR other error!!!";
     } else {
         qDebug() << "login request successfully sent. waiting on response...";
     }
-
-    // this needs to be in authenticator somehow
-    //open_two_factor_dialog();
 }
 
 void MainWindow::open_two_factor_dialog() {
-    two_factor_dialog *tfg = new two_factor_dialog();
+    two_factor_dialog *tfg = new two_factor_dialog(this);
     tfg->show();
+}
+
+void MainWindow::two_factor_submit(QString qstr) {
+    auth->two_factor(qstr.toStdString());
+
 }
 
 MainWindow::~MainWindow()

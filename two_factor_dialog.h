@@ -2,6 +2,7 @@
 #define TWO_FACTOR_DIALOG_H
 
 #include <QDialog>
+#include "mainwindow.h"
 
 namespace Ui {
 class two_factor_dialog;
@@ -19,6 +20,7 @@ private slots:
     void two_factor_submit();
 private:
     Ui::two_factor_dialog *ui;
+    MainWindow *p;
 };
 
 #endif // TWO_FACTOR_DIALOG_H

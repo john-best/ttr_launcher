@@ -1,8 +1,10 @@
 #include "Authenticator.h"
 
-Authenticator::Authenticator()
+
+Authenticator::Authenticator(QWidget *parent)
 {
    networkManager = new QNetworkAccessManager(this);
+   p = parent;
 }
 
 Authenticator::~Authenticator() {
@@ -58,10 +60,12 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     QByteArray data = reply->readAll();
     QJsonObject json_object = QJsonDocument::fromJson(data).object();
+    reply->deleteLater();
 
     // api documentation mentions that there should always be a success key/value pair.
     if (!json_object.contains("success")) {
         qDebug() << "key/value pair \"success\" is missing! stopping...";
+        qDebug() << QString(QJsonDocument(json_object).toJson());
         return;
     }
 
@@ -70,34 +74,38 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // user can immediately log in with given playcookie
     if (res_success.toString() == "true") {
+        qDebug() << "player cookie get!";
         res_token = json_object["cookie"];
+        return;
     }
 
     // user needs to go through 2-factor authentication
     if (res_success.toString() == "partial") {
-        two_factor(json_object["responseToken"].toString().toStdString());
+        qDebug() << "awaiting two factor...";
+        two_factor_server_token = json_object["responseToken"].toString().toStdString();
+        two_factor();
     }
 
     // delayed response
     if (res_success.toString() == "delayed") {
+        qDebug() << "in queue...";
         delayed_login(json_object["queueToken"].toString().toStdString());
     }
 
     // failure
     if (res_success.toString() == "false") {
+        qDebug() << "invalid credentials or servers are down!";
         return;
     }
-
-    reply->deleteLater();
 }
 
 /* two_factor(server_token, player_token);
  * posts to server the appToken (given by server previously) and the authToken (given by user)
  */
-void Authenticator::two_factor(std::string server_token, std::string player_token) {
+void Authenticator::two_factor(std::string player_token) {
     if (player_token.compare("") == 0) {
         qDebug() << "need player token to proceed, window popup where??";
-        // TODO: window popup for 2 factor
+        //p->open_two_factor_dialog();
         return;
     }
 
@@ -107,7 +115,7 @@ void Authenticator::two_factor(std::string server_token, std::string player_toke
     // build the post data
     QUrlQuery postData;
     postData.addQueryItem("appToken", QString::fromStdString(player_token));
-    postData.addQueryItem("authToken", QString::fromStdString(server_token));
+    postData.addQueryItem("authToken", QString::fromStdString(two_factor_server_token));
 
     // set up request
     QNetworkRequest request(apiUrl);
