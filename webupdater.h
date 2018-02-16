@@ -2,7 +2,7 @@
 #define WEBUPDATER_H
 
 #include <QtNetwork>
-
+#include <string.h>
 class WebUpdater : public QObject
 {
     Q_OBJECT
@@ -10,7 +10,14 @@ class WebUpdater : public QObject
 public:
     WebUpdater();
     ~WebUpdater();
-    bool load_news();
+    void load_news();
+
+signals:
+    void update_news_request(bool res, std::string in);
+private slots:
+    void handle_network_response(QNetworkReply *reply);
+private:
+    QNetworkAccessManager *networkManager;
 };
 
 #endif // WEBUPDATER_H

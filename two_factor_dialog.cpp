@@ -12,8 +12,7 @@ two_factor_dialog::two_factor_dialog(QWidget *parent) :
     p = (MainWindow *)parent;
 }
 
-two_factor_dialog::~two_factor_dialog()
-{
+two_factor_dialog::~two_factor_dialog() {
     delete ui;
 }
 

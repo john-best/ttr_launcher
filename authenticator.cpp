@@ -67,7 +67,6 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
     }
 
     QJsonValue res_success = json_object["success"];
-    QJsonValue res_token;
 
     // user can immediately log in with given playcookie
     if (res_success.toString() == "true") {

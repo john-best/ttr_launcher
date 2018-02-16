@@ -26,9 +26,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    Authenticator.cpp \
     two_factor_dialog.cpp \
-    webupdater.cpp
+    webupdater.cpp \
+    authenticator.cpp
 
 HEADERS += \
         mainwindow.h \

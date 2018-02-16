@@ -20,11 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->toonhq_website_button, SIGNAL(clicked()), this, SLOT(open_toonhq_website()));
 
     auth = new Authenticator();
+    connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
+
     webu = new WebUpdater();
+    connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
 }
 
 void MainWindow::handleLoginButton() {
-    connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
     if (!res) {
         qDebug() << "empty username/password OR other error!!!";
@@ -45,14 +47,19 @@ void MainWindow::two_factor_submit(QString qstr) {
 }
 
 void MainWindow::load_news() {
-    if (!webu->load_news()) {
-        ui->textBrowser->setText("Unable to load Toontown Rewritten Website!");
+    webu->load_news();
+    ui->textBrowser->setText("Loading...");
+}
+
+void MainWindow::update_news(bool res, std::string in) {
+    if (res == false) {
+        ui->textBrowser->setText("Unable to load TTR Website!\n" + QString::fromStdString(in));
+        return;
     }
+    ui->textBrowser->setText(QString::fromStdString(in));
 }
 
-void MainWindow::check_for_updates() {
-
-}
+void MainWindow::check_for_updates() {}
 
 MainWindow::~MainWindow()
 {

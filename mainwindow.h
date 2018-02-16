@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <string>
 #include "Authenticator.h"
 #include "webupdater.h"
 
@@ -27,6 +28,8 @@ private slots:
 
     void open_ttr_website();
     void open_toonhq_website();
+
+    void update_news(bool res, std::string in);
 
 private:
     Ui::MainWindow *ui;
