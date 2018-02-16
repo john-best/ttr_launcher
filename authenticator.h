@@ -18,6 +18,8 @@ public:
 
 signals:
     void two_factor_request();
+    void login_status_update_request(std::string str);
+    void reset_login_request();
 
 private:
     QNetworkAccessManager *networkManager;

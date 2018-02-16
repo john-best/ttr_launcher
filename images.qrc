@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/assets">
+        <file>assets/ttr_logo.png</file>
+    </qresource>
+</RCC>

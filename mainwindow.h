@@ -30,6 +30,8 @@ private slots:
     void open_toonhq_website();
 
     void update_news(bool res, std::string in);
+    void update_login_status(std::string str);
+    void reset_login();
 
 private:
     Ui::MainWindow *ui;

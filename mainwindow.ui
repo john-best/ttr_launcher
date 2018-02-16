@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>631</width>
-    <height>496</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QGroupBox" name="login_box">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>50</y>
+      <x>490</x>
+      <y>170</y>
       <width>251</width>
       <height>191</height>
      </rect>
@@ -90,18 +90,18 @@
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>50</y>
-      <width>256</width>
-      <height>271</height>
+      <x>60</x>
+      <y>180</y>
+      <width>291</width>
+      <height>261</height>
      </rect>
     </property>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>250</y>
+      <x>500</x>
+      <y>370</y>
       <width>231</width>
       <height>31</height>
      </rect>
@@ -129,9 +129,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>350</y>
-      <width>571</width>
+      <x>60</x>
+      <y>490</y>
+      <width>671</width>
       <height>31</height>
      </rect>
     </property>
@@ -148,8 +148,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>392</y>
+      <x>390</x>
+      <y>530</y>
       <width>55</width>
       <height>20</height>
      </rect>
@@ -161,8 +161,8 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>290</y>
+      <x>500</x>
+      <y>410</y>
       <width>231</width>
       <height>31</height>
      </rect>
@@ -180,16 +180,50 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>631</width>
-     <height>26</height>
-    </rect>
-   </property>
+   <widget class="QLabel" name="logo">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>300</width>
+      <height>150</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>501</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/assets/assets/ttr_logo.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="login_status_label">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>130</y>
+      <width>240</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>240</width>
+      <height>35</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>240</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

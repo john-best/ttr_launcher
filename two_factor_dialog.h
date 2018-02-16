@@ -16,8 +16,11 @@ public:
     explicit two_factor_dialog(QWidget *parent = 0);
     ~two_factor_dialog();
 
+signals:
+    reset_login_request();
 private slots:
     void two_factor_submit();
+    void update_close();
 private:
     Ui::two_factor_dialog *ui;
     MainWindow *p;

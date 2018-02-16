@@ -28,14 +28,18 @@ SOURCES += \
         mainwindow.cpp \
     two_factor_dialog.cpp \
     webupdater.cpp \
-    authenticator.cpp
+    authenticator.cpp \
 
 HEADERS += \
         mainwindow.h \
-    Authenticator.h \
+    authenticator.h \
     two_factor_dialog.h \
-    webupdater.h
+    webupdater.h \
+
 
 FORMS += \
         mainwindow.ui \
     two_factor_dialog.ui
+
+RESOURCES += \
+    images.qrc

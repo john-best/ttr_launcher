@@ -77,6 +77,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // user needs to go through 2-factor authentication
     if (res_success.toString() == "partial") {
+        emit login_status_update_request("awaiting two factor...");
         qDebug() << "awaiting two factor...";
         two_factor_server_token = json_object["responseToken"].toString().toStdString();
         two_factor();
@@ -84,12 +85,15 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // delayed response
     if (res_success.toString() == "delayed") {
+        emit login_status_update_request("in queue...");
         qDebug() << "in queue...";
         delayed_login(json_object["queueToken"].toString().toStdString());
     }
 
     // failure
     if (res_success.toString() == "false") {
+        emit login_status_update_request(json_object["banner"].toString().toStdString());
+        emit reset_login_request();
         qDebug() << "Unable to login!";
         qDebug() << json_object["banner"].toString();
         return;
@@ -161,6 +165,9 @@ void Authenticator::launch_game(std::string player_cookie, std::string gameserve
 
     qDebug() << "launching...";
 
+    emit login_status_update_request("Authentication successful. See you in game!");
     // let's safely assume the launcher is in the same directory as the game
     qp.startDetached("TTREngine.exe", QStringList());
+
+    emit reset_login_request();
 }
