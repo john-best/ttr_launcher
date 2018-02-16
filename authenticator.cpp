@@ -1,5 +1,6 @@
 #include "Authenticator.h"
-
+#include <stdlib.h>
+#include <QProcess>
 
 Authenticator::Authenticator()
 {
@@ -49,8 +50,6 @@ bool Authenticator::login(std::string username, std::string password) {
  * success = delayed - need to wait in queue to get a cookie
  */
 void Authenticator::handle_auth_response(QNetworkReply *reply) {
-    qDebug() << "got an authentication response!";
-
     // if there is an error there's no need to continue
     if (reply->error()) {
         qDebug() << reply->errorString();
@@ -64,7 +63,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
     qDebug() << QString(data);
     // api documentation mentions that there should always be a success key/value pair.
     if (!json_object.contains("success")) {
-        qDebug() << "key/value pair \"success\" is missing! stopping...";
+        qDebug() << "key/value pair \"success\" is missing. stopping...";
         return;
     }
 
@@ -74,7 +73,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
     // user can immediately log in with given playcookie
     if (res_success.toString() == "true") {
         qDebug() << "player cookie get!";
-        res_token = json_object["cookie"];
+        launch_game(json_object["cookie"].toString().toStdString(), json_object["gameserver"].toString().toStdString());
         return;
     }
 
@@ -104,7 +103,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
  */
 void Authenticator::two_factor(std::string player_token) {
     if (player_token.compare("") == 0) {
-        qDebug() << "need player token to proceed, window popup where??";
+        qDebug() << "need player token to proceed, opening popup...";
         emit two_factor_request();
         return;
     }
@@ -135,7 +134,9 @@ void Authenticator::two_factor(std::string player_token) {
  */
 void Authenticator::delayed_login(std::string queue_token) {
 
-    // TODO: add a delay per 3-5 seconds for wait in between delayed login attempts.
+    // TODO: check if this actually sleeps for 3 seconds
+    qDebug() << "Received delayed login request, sleeping for 3 seconds before sending another...";
+    this->thread()->sleep(3);
 
     // ttr api
     QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/login?format=json");
@@ -155,7 +156,13 @@ void Authenticator::delayed_login(std::string queue_token) {
 }
 
 /* launch the game with environments set */
-void Authenticator::launch_game(std::string player_cookie) {
-    // TODO: get the game to launch
-    return;
+void Authenticator::launch_game(std::string player_cookie, std::string gameserver_ip) {
+    QProcess *qp = new QProcess();
+    qputenv("TTR_GAMESERVER", QString::fromStdString(gameserver_ip).toUtf8());
+    qputenv("TTR_PLAYCOOKIE", QString::fromStdString(player_cookie).toUtf8());
+
+    qDebug() << "launching...";
+
+    // let's safely assume the launcher is in the same directory as the game
+    qp->startDetached("TTREngine.exe", QStringList());
 }

@@ -14,7 +14,7 @@ public:
     bool login(std::string username, std::string password);
     void two_factor(std::string player_token = "");
     void delayed_login(std::string queue_token);
-    void launch_game(std::string player_cookie);
+    void launch_game(std::string player_cookie, std::string gameserver_ip);
 
 signals:
     void two_factor_request();
