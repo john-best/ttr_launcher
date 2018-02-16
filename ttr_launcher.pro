@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     Authenticator.cpp \
-    two_factor_dialog.cpp
+    two_factor_dialog.cpp \
+    webupdater.cpp
 
 HEADERS += \
         mainwindow.h \
     Authenticator.h \
-    two_factor_dialog.h
+    two_factor_dialog.h \
+    webupdater.h
 
 FORMS += \
         mainwindow.ui \

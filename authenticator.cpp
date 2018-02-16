@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <QProcess>
 
-Authenticator::Authenticator()
-{
+Authenticator::Authenticator() {
    networkManager = new QNetworkAccessManager(this);
 }
 
@@ -157,12 +156,12 @@ void Authenticator::delayed_login(std::string queue_token) {
 
 /* launch the game with environments set */
 void Authenticator::launch_game(std::string player_cookie, std::string gameserver_ip) {
-    QProcess *qp = new QProcess();
+    QProcess qp;
     qputenv("TTR_GAMESERVER", QString::fromStdString(gameserver_ip).toUtf8());
     qputenv("TTR_PLAYCOOKIE", QString::fromStdString(player_cookie).toUtf8());
 
     qDebug() << "launching...";
 
     // let's safely assume the launcher is in the same directory as the game
-    qp->startDetached("TTREngine.exe", QStringList());
+    qp.startDetached("TTREngine.exe", QStringList());
 }
