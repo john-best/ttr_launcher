@@ -45,7 +45,7 @@ void MainWindow::two_factor_submit(QString qstr) {
 }
 
 void MainWindow::load_news() {
-    if (!webu->load()) {
+    if (!webu->load_news()) {
         ui->textBrowser->setText("Unable to load Toontown Rewritten Website!");
     }
 }

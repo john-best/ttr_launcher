@@ -17,7 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     void two_factor_submit(QString qstr);
-    void load_web();
+    void load_news();
+    void check_for_updates();
     ~MainWindow();
 
 private slots:

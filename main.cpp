@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    w.load_web();
-    w.check_for_updates();
+    w.load_news();
+
 
 
     qDebug()<<"SSL version use for build: "<<QSslSocket::sslLibraryBuildVersionString();
