@@ -28,8 +28,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
     connect(auth, SIGNAL(login_status_update_request(std::string)), this, SLOT(update_login_status(std::string)));
     connect(auth, SIGNAL(reset_login_request()), this, SLOT(reset_login()));
+
     webu = new WebUpdater();
     connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
+
+    load_news();
+    check_for_updates();
 }
 
 void MainWindow::handleLoginButton() {
@@ -64,7 +68,7 @@ void MainWindow::two_factor_submit(QString qstr) {
 }
 
 void MainWindow::load_news() {
-    webu->load_news();
+    webu->get_news();
     ui->textBrowser->setText("Loading...");
 }
 
@@ -73,11 +77,12 @@ void MainWindow::update_news(bool res, std::string in) {
         ui->textBrowser->setText("Unable to load TTR Website!\n" + QString::fromStdString(in));
         return;
     }
-    //ui->textBrowser->setText(QString::fromStdString(in));
     ui->textBrowser->setHtml(QString::fromStdString(in));
 }
 
-void MainWindow::check_for_updates() {}
+void MainWindow::check_for_updates() {
+    webu->update_manifest();
+}
 
 MainWindow::~MainWindow()
 {

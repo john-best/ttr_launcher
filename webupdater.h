@@ -10,7 +10,8 @@ class WebUpdater : public QObject
 public:
     WebUpdater();
     ~WebUpdater();
-    void load_news();
+    void get_news();
+    void update_manifest();
 
 signals:
     void update_news_request(bool res, std::string in);

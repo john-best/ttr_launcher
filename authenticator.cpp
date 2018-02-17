@@ -4,6 +4,7 @@
 
 Authenticator::Authenticator() {
    networkManager = new QNetworkAccessManager(this);
+   connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
 }
 
 Authenticator::~Authenticator() {
@@ -37,8 +38,6 @@ bool Authenticator::login(std::string username, std::string password) {
 
     // post!
     networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
-
     return true;
 }
 
@@ -124,7 +123,6 @@ void Authenticator::two_factor(std::string player_token) {
 
     // post!
     networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
 }
 
 /*
@@ -153,7 +151,6 @@ void Authenticator::delayed_login(std::string queue_token) {
 
     // post!
     networkManager->post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
-    connect(networkManager, SIGNAL(finished(QNetworkReply*)), SLOT(handle_auth_response(QNetworkReply*)));
 }
 
 /* launch the game with environments set */
