@@ -12,10 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->download_bar->hide();
     ui->download_label->hide();
-
     ui->login_status_label->setWordWrap(true);
     ui->login_status_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
     ui->login_status_label->update();
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowMaximizeButtonHint);
+    this->setFixedSize(this->width(), this->height());
 
     connect(ui->login_button, SIGNAL (clicked()), this, SLOT (handleLoginButton()));
     connect(ui->username_input, SIGNAL (returnPressed()), this, SLOT (handleLoginButton()));
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::handleLoginButton() {
+    ui->login_status_label->setText("");
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
     if (!res) {
         qDebug() << "empty username/password OR other error!!!";
@@ -46,13 +48,17 @@ void MainWindow::handleLoginButton() {
 }
 
 void MainWindow::open_two_factor_dialog() {
+    // TODO memory leak here
     two_factor_dialog *tfg = new two_factor_dialog(this);
     connect(tfg, SIGNAL(reset_login_request()), this, SLOT(reset_login()));
-    tfg->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    connect(tfg, SIGNAL(reset_login_label_request(std::string)), this, SLOT(update_login_status(std::string)));
+    tfg->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowMaximizeButtonHint);
+    tfg->setFixedSize(tfg->width(), tfg->height());
     tfg->show();
 }
 
 void MainWindow::two_factor_submit(QString qstr) {
+    ui->login_status_label->setText("Two-factor submitted! Waiting on response...");
     auth->two_factor(qstr.toStdString());
 
 }
@@ -67,7 +73,8 @@ void MainWindow::update_news(bool res, std::string in) {
         ui->textBrowser->setText("Unable to load TTR Website!\n" + QString::fromStdString(in));
         return;
     }
-    ui->textBrowser->setText(QString::fromStdString(in));
+    //ui->textBrowser->setText(QString::fromStdString(in));
+    ui->textBrowser->setHtml(QString::fromStdString(in));
 }
 
 void MainWindow::check_for_updates() {}

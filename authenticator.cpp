@@ -77,7 +77,6 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // user needs to go through 2-factor authentication
     if (res_success.toString() == "partial") {
-        emit login_status_update_request("awaiting two factor...");
         qDebug() << "awaiting two factor...";
         two_factor_server_token = json_object["responseToken"].toString().toStdString();
         two_factor();
@@ -85,7 +84,6 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 
     // delayed response
     if (res_success.toString() == "delayed") {
-        emit login_status_update_request("in queue...");
         qDebug() << "in queue...";
         delayed_login(json_object["queueToken"].toString().toStdString());
     }
@@ -106,6 +104,7 @@ void Authenticator::handle_auth_response(QNetworkReply *reply) {
 void Authenticator::two_factor(std::string player_token) {
     if (player_token.compare("") == 0) {
         qDebug() << "need player token to proceed, opening popup...";
+        emit login_status_update_request("Awaiting two-factor....");
         emit two_factor_request();
         return;
     }
@@ -136,7 +135,7 @@ void Authenticator::two_factor(std::string player_token) {
  */
 void Authenticator::delayed_login(std::string queue_token) {
 
-    // TODO: check if this actually sleeps for 3 seconds
+    emit login_status_update_request("in queue...");
     qDebug() << "Received delayed login request, sleeping for 3 seconds before sending another...";
     this->thread()->sleep(3);
 

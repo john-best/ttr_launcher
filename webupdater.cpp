@@ -1,4 +1,5 @@
 #include "webupdater.h"
+#include <QDebug>
 
 WebUpdater::WebUpdater(){
     networkManager = new QNetworkAccessManager(this);
@@ -9,9 +10,8 @@ WebUpdater::~WebUpdater(){
 
 void WebUpdater::load_news() {
     // ttr news api
-    // TODO: apparently i can pass in a length to only get the latest x amount
-    // but no documentation from devs so it's just guess and check until i find it??
-    QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/news/list");
+    // looks like we're getting the latest news for now until i figure out how to live my life
+    QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/news");
 
     // set up request
     QNetworkRequest request(apiUrl);
@@ -33,6 +33,5 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
     QJsonObject json_object = QJsonDocument::fromJson(data).object();
     reply->deleteLater();
 
-    // TODO: fancy html stuff i guess, but still need to check the result from reply first.
-    emit update_news_request(true, "TTR website accessed! TODO");
+    emit update_news_request(true, json_object["body"].toString().toStdString());
 }

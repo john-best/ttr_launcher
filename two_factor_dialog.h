@@ -17,7 +17,8 @@ public:
     ~two_factor_dialog();
 
 signals:
-    reset_login_request();
+    void reset_login_request();
+    void reset_login_label_request(std::string str);
 private slots:
     void two_factor_submit();
     void update_close();
