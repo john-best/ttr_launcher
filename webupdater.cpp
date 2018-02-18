@@ -54,7 +54,8 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
 
                 if (!file_up_to_date(filename.toStdString(), hash.toStdString())) {
                     qDebug() << filename << "not up to date!";
-                    needs_dl.append(filename);
+                    QString dl_filename = json_object[filename].toObject()["dl"].toString();
+                    needs_dl.append(dl_filename);
                 } else {
                     qDebug() << filename << "up to date.";
                 }

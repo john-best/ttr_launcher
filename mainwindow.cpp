@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     webu = new WebUpdater();
     connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
-    connect(webu, SIGNAL(download_file_request(QStringList)), this, SLOT(download_files(QStringList)));
+    connect(webu, SIGNAL(download_files_request(QStringList)), this, SLOT(download_files(QStringList)));
 
     fileu = new FileUpdater();
 
@@ -88,6 +88,7 @@ void MainWindow::check_for_updates() {
 }
 
 void MainWindow::download_files(QStringList filenames) {
+    qDebug() << "There are files to be updated... downloading now.";
     fileu->download_files(filenames);
 }
 
