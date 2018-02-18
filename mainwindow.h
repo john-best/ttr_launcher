@@ -5,6 +5,7 @@
 #include <string>
 #include "Authenticator.h"
 #include "webupdater.h"
+#include "fileupdater.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,10 +33,13 @@ private slots:
     void update_news(bool res, std::string in);
     void update_login_status(std::string str);
     void reset_login();
+
+    void download_files(QStringList filenames);
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;
     WebUpdater *webu;
+    FileUpdater *fileu;
 };
 
 #endif // MAINWINDOW_H

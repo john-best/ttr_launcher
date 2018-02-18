@@ -31,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     webu = new WebUpdater();
     connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
+    connect(webu, SIGNAL(download_file_request(QStringList)), this, SLOT(download_files(QStringList)));
+
+    fileu = new FileUpdater();
 
     load_news();
     check_for_updates();
@@ -84,11 +87,16 @@ void MainWindow::check_for_updates() {
     webu->update_manifest();
 }
 
+void MainWindow::download_files(QStringList filenames) {
+    fileu->download_files(filenames);
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
     delete auth;
     delete webu;
+    delete fileu;
 }
 
 void MainWindow::open_ttr_website() {

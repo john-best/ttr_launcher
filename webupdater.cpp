@@ -24,6 +24,49 @@ void WebUpdater::get_news() {
     networkManager->get(request);
 }
 
+void WebUpdater::handle_network_response(QNetworkReply *reply) {
+    if (reply->error()) {
+        emit update_news_request(false, reply->errorString().toStdString());
+    } else {
+        QByteArray data = reply->readAll();
+
+        QJsonObject json_object = QJsonDocument::fromJson(data).object();
+
+        // "title" is only in news -- since we only update manifest and news, don't think we need to change much for now.
+        if (json_object.contains("title")) {
+            QString str = QString::fromStdString("<p>") + json_object["date"].toString() + QString::fromStdString("</p>") + json_object["body"].toString();
+            emit update_news_request(true, str.toStdString());
+
+        } else {
+            QStringList needs_dl;
+
+            for (QString filename : json_object.keys()) {
+                QString hash = json_object[filename].toObject()["hash"].toString();
+
+                QJsonArray only_array = json_object[filename].toObject()["only"].toArray();
+                bool is_win_32 = only_array.contains(QJsonValue(QString::fromStdString("win32")));
+
+                // is this going to be a windows only launcher?
+                if (!is_win_32) {
+                    qDebug() << filename << "is not required for win32. skipping...";
+                    continue;
+                }
+
+                if (!file_up_to_date(filename.toStdString(), hash.toStdString())) {
+                    qDebug() << filename << "not up to date!";
+                    needs_dl.append(filename);
+                } else {
+                    qDebug() << filename << "up to date.";
+                }
+            }
+
+            emit download_files_request(needs_dl);
+        }
+    }
+
+    reply->deleteLater();
+}
+
 void WebUpdater::update_manifest() {
     // manifest to check current files with
     QUrl manifestUrl = QUrl("https://s3.amazonaws.com/cdn.toontownrewritten.com/content/patchmanifest.txt");
@@ -34,56 +77,21 @@ void WebUpdater::update_manifest() {
     networkManager->get(request);
 }
 
-void WebUpdater::handle_network_response(QNetworkReply *reply) {
-    if (reply->error()) {
-        emit update_news_request(false, reply->errorString().toStdString());
-    } else {
-        QByteArray data = reply->readAll();
-        QJsonObject json_object = QJsonDocument::fromJson(data).object();
-
-        // TODO: there's probably a more elegant way of handling this-- need to figure out what the response is...
-        if (json_object.contains("title")) {
-            QString str = QString::fromStdString("<p>") + json_object["date"].toString() + QString::fromStdString("</p>") + json_object["body"].toString();
-            emit update_news_request(true, str.toStdString());
-
-        } else {
-            qDebug() << "manifest size: " << json_object.size();
-
-            for (QString filename : json_object.keys()) {
-                QString hash = json_object[filename].toObject()["hash"].toString();
-
-
-                QJsonArray only_array = json_object[filename].toObject()["only"].toArray();
-                bool is_win_32 = only_array.contains(QJsonValue(QString::fromStdString("win32")));
-
-                // is this going to be a windows only launcher?
-                if (!is_win_32) {
-                    qDebug() << filename << " is not required for win32. skipping...";
-                    continue;
-                }
-
-                if (!file_up_to_date(filename.toStdString(), hash.toStdString())) {
-                    // TODO: redownload the file, patches in the future i guess...
-                    qDebug() << filename << " not up to date!";
-                } else {
-                    qDebug() << filename << " up to date.";
-                }
-            }
-        }
-    }
-    reply->deleteLater();
-}
-
 bool WebUpdater::file_up_to_date(std::string path, std::string dl_hash) {
     QFileInfo file(QString::fromStdString(path));
     bool exists = file.exists() && file.isFile();
 
     if (!exists) return false;
 
-    // waiting on figuring out what hash and compHash are!
-    return dl_hash == get_bz2_hash(path);
-}
+    std::string file_hash = "";
 
-std::string WebUpdater::get_bz2_hash(std::string path) {
-    return "TODO";
+    QFile f(QString::fromStdString(path));
+    if(f.open(QFile::ReadOnly)) {
+        QCryptographicHash hash(QCryptographicHash::Sha1);
+        if (hash.addData(&f)) {
+            file_hash = hash.result().toHex().toStdString();
+        }
+    }
+
+    return dl_hash == file_hash;
 }
