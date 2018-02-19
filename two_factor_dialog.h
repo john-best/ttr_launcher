@@ -14,6 +14,7 @@ class two_factor_dialog : public QDialog
 
 public:
     explicit two_factor_dialog(QWidget *parent = 0);
+    void reject();
     ~two_factor_dialog();
 
 signals:

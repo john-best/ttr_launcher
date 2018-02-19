@@ -61,7 +61,7 @@ void MainWindow::open_two_factor_dialog() {
     two_factor_dialog *tfg = new two_factor_dialog(this);
     connect(tfg, SIGNAL(reset_login_request()), this, SLOT(reset_login()));
     connect(tfg, SIGNAL(reset_login_label_request(std::string)), this, SLOT(update_login_status(std::string)));
-    tfg->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowMaximizeButtonHint);
+    tfg->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowMaximizeButtonHint & ~Qt::WindowMinimizeButtonHint);
     tfg->setFixedSize(tfg->width(), tfg->height());
     tfg->exec();
 }
