@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->login_status_label->setWordWrap(true);
     ui->login_status_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
     ui->login_status_label->update();
+    ui->download_label->setAlignment(Qt::AlignCenter);
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowMaximizeButtonHint);
     this->setFixedSize(this->width(), this->height());
 
@@ -61,7 +62,7 @@ void MainWindow::open_two_factor_dialog() {
     connect(tfg, SIGNAL(reset_login_label_request(std::string)), this, SLOT(update_login_status(std::string)));
     tfg->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowMaximizeButtonHint);
     tfg->setFixedSize(tfg->width(), tfg->height());
-    tfg->show();
+    tfg->exec();
 }
 
 void MainWindow::two_factor_submit(QString qstr) {
@@ -84,13 +85,25 @@ void MainWindow::update_news(bool res, std::string in) {
 }
 
 void MainWindow::check_for_updates() {
+    ui->download_bar->show();
+    ui->download_label->setText("Checking for updates...");
+    ui->download_label->show();
     webu->update_manifest();
+}
+
+void MainWindow::set_download_info(double progress, std::string text) {
+    ui->download_bar->setValue(progress);
+    ui->download_label->setText(QString::fromStdString(text));
 }
 
 void MainWindow::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
     if (dl_filenames.size() > 0) {
         qDebug() << "There are files to be updated... downloading now.";
+        ui->download_label->setText(dl_filenames.size() + "files need to be updated. Starting soon...");
         fileu->download_files(dl_filenames);
+    } else {
+        ui->download_label->setText("All files up to date.");
+        ui->download_bar->setValue(100);
     }
 }
 

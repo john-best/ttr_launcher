@@ -52,6 +52,11 @@ void FileUpdater::handle_network_response(QNetworkReply *reply) {
 
     // this whole section below blocks usage of the application
     // need to move to a different thread to write and extract i guess?
+
+
+    // ^ bad fix below, need to handle better...
+    QCoreApplication::processEvents();
+
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
     file.write(data);

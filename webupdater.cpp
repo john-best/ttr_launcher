@@ -98,5 +98,7 @@ bool WebUpdater::file_up_to_date(std::string path, std::string dl_hash) {
         }
     }
 
+    // bad fix, all updating stuff needs to run in a new thread or something
+    QCoreApplication::processEvents();
     return dl_hash == file_hash;
 }
