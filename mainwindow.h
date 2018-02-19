@@ -34,7 +34,7 @@ private slots:
     void update_login_status(std::string str);
     void reset_login();
 
-    void download_files(QStringList filenames);
+    void download_files(std::vector<std::pair<std::string, std::string>> dl_filenames);
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;

@@ -38,7 +38,9 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
             emit update_news_request(true, str.toStdString());
 
         } else {
-            QStringList needs_dl;
+
+            // pair<filename, dl in bz2>
+            std::vector<std::pair<std::string, std::string>> needs_dl;
 
             for (QString filename : json_object.keys()) {
                 QString hash = json_object[filename].toObject()["hash"].toString();
@@ -55,7 +57,9 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
                 if (!file_up_to_date(filename.toStdString(), hash.toStdString())) {
                     qDebug() << filename << "not up to date!";
                     QString dl_filename = json_object[filename].toObject()["dl"].toString();
-                    needs_dl.append(dl_filename);
+                    std::pair<std::string, std::string> dl_pair(filename.toStdString(), dl_filename.toStdString());
+                    needs_dl.push_back(dl_pair);
+
                 } else {
                     qDebug() << filename << "up to date.";
                 }

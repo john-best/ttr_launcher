@@ -2,6 +2,13 @@
 #include <QFile>
 #include <QFileInfo>
 
+#include <fstream>
+#include <iostream>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/device/file.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/bzip2.hpp>
+#include <boost/iostreams/copy.hpp>
 
 FileUpdater::FileUpdater() {
     networkManager = new QNetworkAccessManager(this);
@@ -12,9 +19,10 @@ FileUpdater::~FileUpdater() {
     delete networkManager;
 }
 
-void FileUpdater::download_files(QStringList filenames) {
-    for (QString filename : filenames) {
-        download_file(filename.toStdString());
+void FileUpdater::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
+    for (auto i : dl_filenames) {
+        bz2_to_files[i.second] = i.first;
+        download_file(i.second);
     }
 }
 
@@ -39,11 +47,40 @@ void FileUpdater::handle_network_response(QNetworkReply *reply) {
     qDebug() << "Downloaded file: " << reply->request().url().fileName();
 
     QByteArray data = reply->readAll();
+    QString filename = reply->request().url().fileName();
 
     qDebug() << "size:" << data.size();
     reply->deleteLater();
 
-    // we probably need to save the file, then open it again and extract using
-    // the boost libraries because apparently qt doesn't have any de/compressions
-    // much less for .bz2 files. TODO
+    // this whole section below blocks usage of the application
+    // need to move to a different thread to write and extract i guess?
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly);
+    file.write(data);
+    file.close();
+
+    // we probably don't even need to write to file, close, then reopen. TODO
+    extract(filename.toStdString());
+}
+
+void FileUpdater::extract(std::string filename) {
+    std::string filename_strip = bz2_to_files[filename];
+
+    qDebug() << QString::fromStdString(filename_strip);
+
+    // decompress bz2
+    std::ifstream inStream(filename, std::ios_base::in | std::ios_base::binary);
+    std::ofstream outStream(filename_strip, std::ios_base::out | std::ios_base::binary);
+    boost::iostreams::filtering_streambuf<boost::iostreams::output> out;
+    out.push(boost::iostreams::bzip2_decompressor());
+    out.push(outStream);
+    boost::iostreams::copy(inStream, out);
+
+
+    // delete bz2
+
+    QFile file(QString::fromStdString(filename));
+    file.remove();
+
+    qDebug() << "finished decompressing " << QString::fromStdString(filename);
 }
