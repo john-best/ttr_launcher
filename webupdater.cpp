@@ -42,6 +42,8 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
             // pair<filename, dl in bz2>
             std::vector<std::pair<std::string, std::string>> needs_dl;
 
+            double size = json_object.size();
+            double counter = 0.0;
             for (QString filename : json_object.keys()) {
                 QString hash = json_object[filename].toObject()["hash"].toString();
 
@@ -61,6 +63,11 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
                     needs_dl.push_back(dl_pair);
 
                 } else {
+                    std::string s = (filename + " up to date.").toStdString();
+
+                    // ok this probably isn't the best way to do this but it works for now.
+                    // TODO: what do we do when the files aren't up to date?
+                    emit update_download_request((++counter/size) * 100, s);
                     qDebug() << filename << "up to date.";
                 }
             }

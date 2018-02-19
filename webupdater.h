@@ -16,6 +16,7 @@ public:
 signals:
     void update_news_request(bool res, std::string in);
     void download_files_request(std::vector<std::pair<std::string, std::string>> filenames_pair);
+    void update_download_request(double progress, std::string text);
 private slots:
     void handle_network_response(QNetworkReply *reply);
 private:

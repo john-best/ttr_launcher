@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     webu = new WebUpdater();
     connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
     connect(webu, SIGNAL(download_files_request(std::vector<std::pair<std::string, std::string>>)), this, SLOT(download_files(std::vector<std::pair<std::string, std::string>>)));
+    connect(webu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double, std::string)));
 
     fileu = new FileUpdater();
 
@@ -91,7 +92,7 @@ void MainWindow::check_for_updates() {
     webu->update_manifest();
 }
 
-void MainWindow::set_download_info(double progress, std::string text) {
+void MainWindow::update_download_info(double progress, std::string text) {
     ui->download_bar->setValue(progress);
     ui->download_label->setText(QString::fromStdString(text));
 }
