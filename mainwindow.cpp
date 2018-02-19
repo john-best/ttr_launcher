@@ -10,8 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->download_bar->hide();
-    ui->download_label->hide();
     ui->login_status_label->setWordWrap(true);
     ui->login_status_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
     ui->login_status_label->update();

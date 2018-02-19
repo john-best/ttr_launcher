@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="/assets">
+    <qresource prefix="/">
         <file>assets/ttr_logo.png</file>
+        <file>assets/stardust_2X.png</file>
     </qresource>
 </RCC>

@@ -54,6 +54,12 @@
      <height>32</height>
     </rect>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>32</height>
+    </size>
+   </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
@@ -69,6 +75,12 @@
      <width>91</width>
      <height>32</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>32</height>
+    </size>
    </property>
    <property name="focusPolicy">
     <enum>Qt::WheelFocus</enum>
