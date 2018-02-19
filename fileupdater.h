@@ -15,6 +15,8 @@ public:
 
     void download_files(std::vector<std::pair<std::string, std::string>> dl_filenames);
 
+signals:
+    void update_download_request(double progress, std::string text);
 private slots:
     void handle_network_response(QNetworkReply *reply);
 private:
@@ -22,6 +24,7 @@ private:
     void download_file(std::string filename);
     void extract(std:: string filename);
     std::unordered_map<std::string, std::string> bz2_to_files;
+    double file_downloaded_count = 0;
 };
 
 #endif // FILEUPDATER_H

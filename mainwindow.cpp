@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(webu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double, std::string)));
 
     fileu = new FileUpdater();
+    connect(fileu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double,std::string)));
 
     load_news();
     check_for_updates();
@@ -93,6 +94,14 @@ void MainWindow::check_for_updates() {
 }
 
 void MainWindow::update_download_info(double progress, std::string text) {
+
+    if (progress == 100.0) {
+        reset_login();
+    } else {
+        ui->username_input->setDisabled(true);
+        ui->password_input->setDisabled(true);
+        ui->login_button->setDisabled(true);
+    }
     ui->download_bar->setValue(progress);
     ui->download_label->setText(QString::fromStdString(text));
 }
@@ -100,11 +109,12 @@ void MainWindow::update_download_info(double progress, std::string text) {
 void MainWindow::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
     if (dl_filenames.size() > 0) {
         qDebug() << "There are files to be updated... downloading now.";
-        ui->download_label->setText(dl_filenames.size() + "files need to be updated. Starting soon...");
+
+        std::string str = dl_filenames.size() + " files need to be updated. Starting soon...";
+        update_download_info(0, str);
         fileu->download_files(dl_filenames);
     } else {
-        ui->download_label->setText("All files up to date.");
-        ui->download_bar->setValue(100);
+        update_download_info(100.0, "All files are up to date.");
     }
 }
 

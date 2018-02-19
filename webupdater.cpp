@@ -44,6 +44,7 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
 
             double size = json_object.size();
             double counter = 0.0;
+
             for (QString filename : json_object.keys()) {
                 QString hash = json_object[filename].toObject()["hash"].toString();
 
@@ -57,11 +58,14 @@ void WebUpdater::handle_network_response(QNetworkReply *reply) {
                 }
 
                 if (!file_up_to_date(filename.toStdString(), hash.toStdString())) {
+
+                    std::string s = (filename + " not up to date.").toStdString();
+                    emit update_download_request((counter/size) * 100, s);
+
                     qDebug() << filename << "not up to date!";
                     QString dl_filename = json_object[filename].toObject()["dl"].toString();
                     std::pair<std::string, std::string> dl_pair(filename.toStdString(), dl_filename.toStdString());
                     needs_dl.push_back(dl_pair);
-
                 } else {
                     std::string s = (filename + " up to date.").toStdString();
 

@@ -18,6 +18,7 @@ FileUpdater::~FileUpdater() {
 }
 
 void FileUpdater::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
+    emit update_download_request(0, "Downloading files...");
     for (auto i : dl_filenames) {
         bz2_to_files[i.second] = i.first;
         download_file(i.second);
@@ -43,11 +44,9 @@ void FileUpdater::handle_network_response(QNetworkReply *reply) {
     }
 
     qDebug() << "Downloaded file: " << reply->request().url().fileName();
-
     QByteArray data = reply->readAll();
     QString filename = reply->request().url().fileName();
 
-    qDebug() << "size:" << data.size();
     reply->deleteLater();
 
     // this whole section below blocks usage of the application
@@ -86,4 +85,10 @@ void FileUpdater::extract(std::string filename) {
     file.remove();
 
     qDebug() << "finished decompressing " << QString::fromStdString(filename);
+
+    std::string str = "Updated " + filename_strip;
+    emit update_download_request(++file_downloaded_count/bz2_to_files.size() * 100, str);
+    if (file_downloaded_count >= bz2_to_files.size()) {
+        emit update_download_request(100.0, "All files done updating.");
+    }
 }
