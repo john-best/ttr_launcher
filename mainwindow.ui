@@ -14,11 +14,38 @@
    <string>Yet Another TTR Launcher</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#centralWidget {border-image: url(:/assets/stardust_2X.png) 0 0 0 0 stretch;}</string>
+   <string notr="true">QScrollBar:vertical {
+	border: 1px solid #999999;
+	background:white;
+	width:10px;
+	margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+stop: 0 #80ccff, stop: 0.5 #80ccff, stop:1 #80ccff);
+min-height: 0px;
+}
+
+QScrollBar::add-line:vertical {
+background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+stop: 0 #80ccff, stop: 0.5 #80ccff, stop:1 #80ccff);
+height: 0px;
+subcontrol-position: bottom;
+subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+stop: 0 #80ccff, stop: 0.5 #80ccff, stop:1 #80ccff);
+height: 0 px;
+subcontrol-position: top;
+subcontrol-origin: margin;
+}</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">background-color: #83ddff;</string>
    </property>
    <widget class="QGroupBox" name="login_box">
     <property name="geometry">
@@ -31,8 +58,8 @@
     </property>
     <property name="styleSheet">
      <string notr="true">color: white;
-border-radius: 4px;
-background-color: #3b3d45;</string>
+border-radius: 8px;
+background-color: #80ccff;</string>
     </property>
     <property name="title">
      <string/>
@@ -52,15 +79,22 @@ background-color: #3b3d45;</string>
      <property name="styleSheet">
       <string notr="true">QPushButton {
 color: #FFFFFF;
-background-color: #007E33;
-border: 1px #130269;
+background-color: #ffbb33;
+border: 1px orange;
 border-radius: 4px;
 }
 
 QPushButton:hover {
 color: #000000;
-background-color: #007E33;
-border: 1px #130269;
+background-color: #ffbb33;
+border: 1px orange;
+border-radius: 4px;
+}
+
+QPushButton:disabled {
+color: grey;
+background-color: #D3D3D3;
+border: 1px grey;
 border-radius: 4px;
 }
 </string>
@@ -79,7 +113,15 @@ border-radius: 4px;
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #4B515D;</string>
+      <string notr="true">QLineEdit {
+background-color: white;
+color: black;
+}
+
+QLineEdit:disabled {
+color: grey;
+background-color: #D3D3D3;
+}</string>
      </property>
      <property name="text">
       <string/>
@@ -98,7 +140,16 @@ border-radius: 4px;
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: #4B515D;</string>
+      <string notr="true">QLineEdit{
+background-color: white;
+color: black;
+}
+
+
+QLineEdit:disabled {
+color: grey;
+background-color: #D3D3D3;
+}</string>
      </property>
      <property name="text">
       <string/>
@@ -119,6 +170,9 @@ border-radius: 4px;
        <height>21</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">color: black;</string>
+     </property>
      <property name="text">
       <string>Login</string>
      </property>
@@ -137,9 +191,11 @@ border-radius: 4px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: white;
-border-radius: 4px;
-background-color: #3b3d45;</string>
+     <string notr="true">QTextBrowser {
+	color: black;
+	border-radius: 8px;
+	background-color: #80ccff;
+}</string>
     </property>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_3">
@@ -225,7 +281,15 @@ border-radius: 4px;
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">QProgressBar:horizontal {
+border: 1px solid gray;
+border-radius: 4px;
+background: white;
+}
+QProgressBar::chunk:horizontal {
+background: #90EE90;
+border-radius: 4px;
+}</string>
     </property>
     <property name="value">
      <number>0</number>
@@ -291,7 +355,9 @@ border-radius: 4px;
 
 QPushButton:disabled {
 color: grey;
-background-color: #546e7a
+background-color: #D3D3D3;
+border: 1px grey;
+border-radius: 4px;
 }
 </string>
        </property>
@@ -318,7 +384,7 @@ background-color: #546e7a
      </size>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/assets/ttr_logo.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/assets/ttr_logo_new.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="login_status_label">
