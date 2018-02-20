@@ -7,15 +7,15 @@ A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), bec
 
 ### What's different? ###
 
-* Username saving on successful login (so you don't have to reenter your username every time)
-* Buttons to Toontown Rewritten's website and also to [ToonHQ's website](https://toonhq.org)
+* Username saving on successful login
+* Buttons to Toontown Rewritten's website and also [ToonHQ's website](https://toonhq.org)
 * Only latest news (no photo included, will fix someday)
 * That's pretty much it.
 
 ### What's next? ###
-* Better news view (does anyone even read the news? Probably not, but best to make it better anyways)
+* QWebView for news rather than QTextBrowser
 * Resource pack support (so you can switch between packs (are there even multiple packs?) before launching)
-* Mac and Linux support (Most likely doable, I don't have anything to test with, though)
+* Mac and Linux support
 * A more sophisticated theme/style
 
 ## Compiling ##
