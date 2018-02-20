@@ -9,10 +9,10 @@ class WebUpdaterWorker : public QObject {
     QThread workerThread;
 
 public slots:
-    void handle_manifest_worker(QByteArray data);
+    void worker_handle_manifest(QByteArray data);
 signals:
-    void resultReady(std::vector<std::pair<std::string, std::string>> needs_dl);
-    void update_download_request_worker(double progress, std::string text);
+    void worker_required_files_request(std::vector<std::pair<std::string, std::string>> needs_dl);
+    void worker_update_download_request(double progress, std::string text);
 private:
     bool file_up_to_date(std::string path, std::string dl_hash);
 };
@@ -32,11 +32,11 @@ signals:
     void update_news_request(bool res, std::string in);
     void download_files_request(std::vector<std::pair<std::string, std::string>> filenames_pair);
     void update_download_request(double progress, std::string text);
-    void handle_manifest(QByteArray data);
+    void send_manifest_to_worker(QByteArray data);
 private slots:
     void handle_network_response(QNetworkReply *reply);
-    void handle_download_request(double progress, std::string text);
-    void handle_finished_manifest_request(std::vector<std::pair<std::string, std::string>> filenames_pair);
+    void send_update_download_request_to_main(double progress, std::string text);
+    void send_required_files_to_main(std::vector<std::pair<std::string, std::string>> filenames_pair);
 private:
     QNetworkAccessManager *networkManager;
 };
