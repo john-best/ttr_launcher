@@ -3,7 +3,7 @@
 
 _Yet Another Toontown Rewritten Launcher (name pending)_
 
-A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), because the current launcher (as of Feb 20, 2018) seems a bit out of date. Let it be known that this was a project to learn more about Qt, so things may not be of the highest qualitye .
+A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), because the current launcher (as of Feb 20, 2018) seems a bit out of date. Let it be known that this was a project to learn more about Qt, so things may not be of the highest quality.
 
 ### What's different? ###
 
