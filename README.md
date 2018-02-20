@@ -34,4 +34,4 @@ You're going to need the Qt dlls and some OpenSSL dlls for this to work as well.
 I'm not sure I don't think anyone wants to contribute to this but if you do want to just send in a pull request or something.
 
 # A photo #
-![Let's rework this styling someday.](https://i.imgur.com/fQmj1B8.png)
+![Let's rework this styling someday.](https://i.imgur.com/VrbeCAA.png)

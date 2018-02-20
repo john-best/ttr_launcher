@@ -51,9 +51,9 @@ subcontrol-origin: margin;
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>180</y>
+      <y>200</y>
       <width>251</width>
-      <height>191</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -71,14 +71,17 @@ background-color: rgba(128, 204, 255, 0.5);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>150</y>
+       <y>110</y>
        <width>231</width>
-       <height>28</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Comic Sans MS</family>
+       <family>Lato</family>
+       <pointsize>9</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="styleSheet">
@@ -112,19 +115,22 @@ border-radius: 4px;
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
-       <width>229</width>
+       <y>10</y>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
+       <family>Lato</family>
        <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
-background-color: white;
+background-color: rgba(255, 255, 255, 0.8);
 color: black;
 }
 
@@ -144,19 +150,20 @@ background-color: #D3D3D3;
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>60</y>
        <width>229</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
+       <family>Lato</family>
        <pointsize>10</pointsize>
       </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit{
-background-color: white;
+background-color: rgba(255, 255, 255, 0.8);
 color: black;
 }
 
@@ -176,45 +183,19 @@ background-color: #D3D3D3;
       <string>Password</string>
      </property>
     </widget>
-    <widget class="QLabel" name="login_label">
-     <property name="geometry">
-      <rect>
-       <x>100</x>
-       <y>10</y>
-       <width>55</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>9</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: black;
-background-color: rgba(0, 0, 0, 0);</string>
-     </property>
-     <property name="text">
-      <string>Login</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
    </widget>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>180</y>
-      <width>401</width>
-      <height>271</height>
+      <x>50</x>
+      <y>50</y>
+      <width>411</width>
+      <height>401</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Calibri</family>
+      <family>Lato</family>
       <pointsize>10</pointsize>
      </font>
     </property>
@@ -222,7 +203,7 @@ background-color: rgba(0, 0, 0, 0);</string>
      <string notr="true">QTextBrowser {
 	color: black;
 	border-radius: 8px;
-	background-color: rgba(227,227,227,0.3);
+	background-color: rgba(227,227,227,0.5);
 }</string>
     </property>
     <property name="openExternalLinks">
@@ -249,7 +230,9 @@ background-color: rgba(0, 0, 0, 0);</string>
        </property>
        <property name="font">
         <font>
-         <family>Comic Sans MS</family>
+         <family>Lato</family>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -283,20 +266,22 @@ border-radius: 4px;
        </property>
        <property name="font">
         <font>
-         <family>Comic Sans MS</family>
+         <family>Lato</family>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">QPushButton {
 color: #FFFFFF;
-background-color: #4285F4;
+background-color: #00C851;
 border: 1px blue;
 border-radius: 4px;
 }
 
 QPushButton:hover {
 color: #000000;
-background-color: #4285F4;
+background-color: #00C851;
 border: 1px blue;
 border-radius: 4px;
 }
@@ -390,7 +375,9 @@ border-radius: 4px;
        </property>
        <property name="font">
         <font>
-         <family>Comic Sans MS</family>
+         <family>Lato</family>
+         <weight>75</weight>
+         <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -426,7 +413,7 @@ border-radius: 4px;
    <widget class="QLabel" name="logo">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>460</x>
       <y>10</y>
       <width>300</width>
       <height>150</height>
@@ -439,29 +426,37 @@ border-radius: 4px;
      </size>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/assets/ttr_logo_new.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/assets/ttr_logo.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="login_status_label">
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>130</y>
-      <width>240</width>
+      <y>160</y>
+      <width>250</width>
       <height>35</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>240</width>
+      <width>250</width>
       <height>35</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>240</width>
-      <height>16777215</height>
+      <width>250</width>
+      <height>35</height>
      </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lato</family>
+      <pointsize>8</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="styleSheet">
      <string notr="true">color: white;</string>
