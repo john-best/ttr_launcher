@@ -1,7 +1,6 @@
 #include "webupdater.h"
 #include <QDebug>
 #include <QFileInfo>
-#include <QMetaType>
 
 // constructor
 WebUpdater::WebUpdater() {

@@ -1,4 +1,4 @@
-    #include "fileupdater.h"
+#include "fileupdater.h"
 #include <QFile>
 #include <QFileInfo>
 
@@ -11,13 +11,25 @@
 FileUpdater::FileUpdater() {
     networkManager = new QNetworkAccessManager(this);
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(handle_network_response(QNetworkReply*)));
+
+    FileUpdaterWorker *worker = new FileUpdaterWorker();
+    worker->moveToThread(&workerThread);
+    connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+
+    qRegisterMetaType<std::unordered_map<std::string,std::string>>("std::unordered_map<std::string,std::string>");
+    connect(this, SIGNAL(send_file_to_worker(QByteArray, std::string, std::unordered_map<std::string, std::string>)),
+            worker, SLOT(worker_handle_file(QByteArray, std::string, std::unordered_map<std::string, std::string>)));
+    connect(worker, SIGNAL(worker_update_download_request(double,std::string)), this, SLOT(send_update_download_request_to_main(double,std::string)));
+    workerThread.start();
 }
 
 FileUpdater::~FileUpdater() {
     delete networkManager;
+    workerThread.quit();
+    workerThread.wait();
 }
 
-void FileUpdater::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
+void FileUpdater::download_files(std::vector<std::pair<std::string, std::string>> dl_filenames) {
     emit update_download_request(0, "Downloading files...");
     for (auto i : dl_filenames) {
         bz2_to_files[i.second] = i.first;
@@ -46,30 +58,27 @@ void FileUpdater::handle_network_response(QNetworkReply *reply) {
     qDebug() << "Downloaded file: " << reply->request().url().fileName();
     QByteArray data = reply->readAll();
     QString filename = reply->request().url().fileName();
-
     reply->deleteLater();
 
-    // this whole section below blocks usage of the application
-    // need to move to a different thread to write and extract i guess?
+    emit send_file_to_worker(data, filename.toStdString(), bz2_to_files);
+}
 
+void FileUpdater::send_update_download_request_to_main(double progress, std::string text) {
+    emit update_download_request(progress, text);
+}
 
-    // ^ bad fix below, need to handle better...
-    QCoreApplication::processEvents();
-
-    QFile file(filename);
+void FileUpdaterWorker::worker_handle_file(QByteArray data, std::string filename, std::unordered_map<std::string, std::string> bz2_to_files) {
+   QFile file(QString::fromStdString(filename));
     file.open(QIODevice::WriteOnly);
     file.write(data);
     file.close();
 
-    QCoreApplication::processEvents();
     // we probably don't even need to write to file, close, then reopen. TODO
-    extract(filename.toStdString());
+    extract(filename, bz2_to_files);
 }
 
-void FileUpdater::extract(std::string filename) {
+void FileUpdaterWorker::extract(std::string filename, std::unordered_map<std::string, std::string> bz2_to_files) {
     std::string filename_strip = bz2_to_files[filename];
-
-    qDebug() << QString::fromStdString(filename_strip);
 
     // decompress bz2
     std::ifstream inStream(filename, std::ios_base::in | std::ios_base::binary);
@@ -88,8 +97,8 @@ void FileUpdater::extract(std::string filename) {
     qDebug() << "finished decompressing " << QString::fromStdString(filename);
 
     std::string str = "Updated " + filename_strip;
-    emit update_download_request(++file_downloaded_count/bz2_to_files.size() * 100, str);
-    if (file_downloaded_count >= bz2_to_files.size()) {
-        emit update_download_request(100.0, "All files done updating.");
+    emit worker_update_download_request(((double) ++file_completed_count)/bz2_to_files.size() * 100, str);
+    if (file_completed_count >= bz2_to_files.size()) {
+        emit worker_update_download_request(100.0, "All files done updating.");
     }
 }
