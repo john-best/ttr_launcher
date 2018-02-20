@@ -1,4 +1,4 @@
-#include "fileupdater.h"
+    #include "fileupdater.h"
 #include <QFile>
 #include <QFileInfo>
 
@@ -61,6 +61,7 @@ void FileUpdater::handle_network_response(QNetworkReply *reply) {
     file.write(data);
     file.close();
 
+    QCoreApplication::processEvents();
     // we probably don't even need to write to file, close, then reopen. TODO
     extract(filename.toStdString());
 }

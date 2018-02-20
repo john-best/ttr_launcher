@@ -18,7 +18,7 @@ two_factor_dialog::~two_factor_dialog() {
 
 void two_factor_dialog::two_factor_submit() {
     p->two_factor_submit(ui->two_factor_input->text());
-    this->close();
+    QDialog::accept();
 }
 
 void two_factor_dialog::update_close() {

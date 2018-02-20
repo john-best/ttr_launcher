@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/stardust_2X.png</file>
         <file>assets/ttr_logo_new.png</file>
+        <file>assets/background.jpg</file>
     </qresource>
 </RCC>
