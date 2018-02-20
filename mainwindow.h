@@ -21,6 +21,7 @@ public:
     void two_factor_submit(QString qstr);
     void load_news();
     void check_for_updates();
+    void read_settings();
     ~MainWindow();
 
 private slots:
@@ -37,6 +38,8 @@ private slots:
     void update_download_info(double progress, std::string text);
 
     void download_files(std::vector<std::pair<std::string, std::string>> dl_filenames);
+
+    void save_settings();
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;

@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
     connect(auth, SIGNAL(login_status_update_request(std::string)), this, SLOT(update_login_status(std::string)));
     connect(auth, SIGNAL(reset_login_request()), this, SLOT(reset_login()));
+    connect(auth, SIGNAL(login_success()), this, SLOT(save_settings()));
 
     webu = new WebUpdater();
     connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fileu = new FileUpdater();
     connect(fileu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double,std::string)));
 
+    read_settings();
     load_news();
     check_for_updates();
 }
@@ -140,4 +142,32 @@ void MainWindow::reset_login() {
     ui->username_input->setEnabled(true);
     ui->password_input->setEnabled(true);
     ui->login_button->setEnabled(true);
+}
+
+void MainWindow::read_settings() {
+    QFile settings("launcher_settings.txt");
+
+    QString name;
+    if (settings.open(QIODevice::ReadOnly)) {
+        QTextStream in(&settings);
+        name = in.readAll();
+    }
+
+    if (name.split("username=").size() == 2) {
+    ui->username_input->setText(name.split("username=")[1]);
+    }
+
+    settings.close();
+}
+
+void MainWindow::save_settings() {
+    QFile settings("launcher_settings.txt");
+
+    QString name = "username=" + ui->username_input->text();
+
+    if (settings.open(QIODevice::WriteOnly)) {
+        settings.write(name.toUtf8());
+    }
+
+    settings.close();
 }

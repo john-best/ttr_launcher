@@ -166,4 +166,5 @@ void Authenticator::launch_game(std::string player_cookie, std::string gameserve
     qp.startDetached("TTREngine.exe", QStringList());
 
     emit reset_login_request();
+    emit login_success();
 }
