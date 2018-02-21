@@ -40,11 +40,15 @@ private slots:
     void download_files(std::vector<std::pair<std::string, std::string>> dl_filenames);
 
     void save_settings();
+
+    void open_resource_packs();
+    void set_resource_pack(std::string resource_pack);
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;
     WebUpdater *webu;
     FileUpdater *fileu;
+    std::string current_resource_pack = "";
 };
 
 #endif // MAINWINDOW_H

@@ -172,7 +172,6 @@ bool WebUpdaterWorker::file_up_to_date(std::string path, std::string dl_hash) {
     // exit early if we the file doesn't exist
     return file.exists() && file.isFile();
 
-
     // check hash
     std::string file_hash = "";
     QFile f(QString::fromStdString(path));

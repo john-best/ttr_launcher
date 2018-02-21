@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "two_factor_dialog.h"
+#include "resourcepacks.h"
 #include <QDebug>
 #include <QDesktopServices>
 #include <QUrl>
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->password_input, SIGNAL (returnPressed()), this, SLOT (handleLoginButton()));
     connect(ui->ttr_website_button, SIGNAL(clicked()), this, SLOT(open_ttr_website()));
     connect(ui->toonhq_website_button, SIGNAL(clicked()), this, SLOT(open_toonhq_website()));
+    connect(ui->resourcepacks_button, SIGNAL(clicked()), this, SLOT(open_resource_packs()));
 
     auth = new Authenticator();
     connect(auth, SIGNAL (two_factor_request()), this, SLOT(open_two_factor_dialog()));
@@ -145,29 +147,50 @@ void MainWindow::reset_login() {
 }
 
 void MainWindow::read_settings() {
-    QFile settings("launcher_settings.txt");
+    QSettings settings("launcher_settings.ini", QSettings::IniFormat);
+    settings.beginGroup("Launcher");
 
-    QString name;
-    if (settings.open(QIODevice::ReadOnly)) {
-        QTextStream in(&settings);
-        name = in.readAll();
+    if (settings.contains("username")) {
+        ui->username_input->setText(settings.value("username", "").toString());
     }
 
-    if (name.split("username=").size() == 2) {
-    ui->username_input->setText(name.split("username=")[1]);
+    if (settings.contains("resource_pack_dir")) {
+        current_resource_pack = settings.value("resource_pack_dir", "").toString().toStdString();
     }
-
-    settings.close();
 }
 
 void MainWindow::save_settings() {
-    QFile settings("launcher_settings.txt");
+    QSettings settings("launcher_settings.ini", QSettings::IniFormat);
+    settings.beginGroup("Launcher");
+    settings.setValue("username", ui->username_input->text());
+    settings.setValue("resource_pack_dir", QString::fromStdString(current_resource_pack));
+    settings.sync();
+}
 
-    QString name = "username=" + ui->username_input->text();
 
-    if (settings.open(QIODevice::WriteOnly)) {
-        settings.write(name.toUtf8());
-    }
+void MainWindow::open_resource_packs() {
+    // TODO: memory leak here, probably.
+    ResourcePacks *resource_packs_window = new ResourcePacks(0, current_resource_pack);
+    connect(resource_packs_window, SIGNAL(send_pack_dir_to_main(std::string)), this, SLOT(set_resource_pack(std::string)));
 
-    settings.close();
+    resource_packs_window->setModal(true);
+    resource_packs_window->show();
+}
+
+void MainWindow::set_resource_pack(std::string resource_pack) {
+    current_resource_pack = resource_pack;
+
+    QSettings settings("launcher_settings.ini", QSettings::IniFormat);
+    settings.beginGroup("Launcher");
+    settings.setValue("resource_pack_dir", QString::fromStdString(current_resource_pack));
+    settings.sync();
+
+    // TODO
+    // check if files in resources/ match files in content pack directory
+    // if not, delete all files in resources/ and copy files over from content pack directory
+    // if so, do nothing because files are up to date
+
+    // if content pack directory is "", delete all files in resources (probably do this first!)
+    // need a worker for this, otherwise blocking is going to happen and we don't want that.
+    // make sure to disable login until finished copying / deleting.
 }

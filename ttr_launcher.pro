@@ -33,19 +33,22 @@ SOURCES += \
     two_factor_dialog.cpp \
     webupdater.cpp \
     authenticator.cpp \
-    fileupdater.cpp
+    fileupdater.cpp \
+    resourcepacks.cpp
 
 HEADERS += \
         mainwindow.h \
     authenticator.h \
     two_factor_dialog.h \
     webupdater.h \
-    fileupdater.h
+    fileupdater.h \
+    resourcepacks.h
 
 
 FORMS += \
         mainwindow.ui \
-    two_factor_dialog.ui
+    two_factor_dialog.ui \
+    resourcepacks.ui
 
 RESOURCES += \
     images.qrc
