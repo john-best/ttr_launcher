@@ -25,11 +25,9 @@ class WebUpdater : public QObject
 public:
     WebUpdater();
     ~WebUpdater();
-    void get_news();
     void update_manifest();
 
 signals:
-    void update_news_request(bool res, std::string in);
     void download_files_request(std::vector<std::pair<std::string, std::string>> filenames_pair);
     void update_download_request(double progress, std::string text);
     void send_manifest_to_worker(QByteArray data);

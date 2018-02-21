@@ -32,12 +32,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(auth, SIGNAL(login_success()), this, SLOT(save_settings()));
 
     webu = new WebUpdater();
-    connect(webu, SIGNAL(update_news_request(bool, std::string)), this, SLOT(update_news(bool, std::string)));
     connect(webu, SIGNAL(download_files_request(std::vector<std::pair<std::string, std::string>>)), this, SLOT(download_files(std::vector<std::pair<std::string, std::string>>)));
     connect(webu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double, std::string)));
 
     fileu = new FileUpdater();
     connect(fileu, SIGNAL(update_download_request(double, std::string)), this, SLOT(update_download_info(double,std::string)));
+
+
+    web_view = new QWebEngineView(ui->web_view_parent);
+    web_view->setFixedSize(ui->web_view_parent->width(), ui->web_view_parent->height());
 
     read_settings();
     load_news();
@@ -76,16 +79,8 @@ void MainWindow::two_factor_submit(QString qstr) {
 }
 
 void MainWindow::load_news() {
-    webu->get_news();
-    ui->textBrowser->setText("Loading...");
-}
-
-void MainWindow::update_news(bool res, std::string in) {
-    if (res == false) {
-        ui->textBrowser->setText("Unable to load TTR Website!\n" + QString::fromStdString(in));
-        return;
-    }
-    ui->textBrowser->setHtml(QString::fromStdString(in));
+    web_view->load(QUrl("https://www.toontownrewritten.com/news"));
+    web_view->show();
 }
 
 void MainWindow::check_for_updates() {

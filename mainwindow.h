@@ -6,6 +6,7 @@
 #include "Authenticator.h"
 #include "webupdater.h"
 #include "fileupdater.h"
+#include <QWebEngineView>
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +32,6 @@ private slots:
     void open_ttr_website();
     void open_toonhq_website();
 
-    void update_news(bool res, std::string in);
     void update_login_status(std::string str);
     void reset_login();
 
@@ -49,6 +49,8 @@ private:
     WebUpdater *webu;
     FileUpdater *fileu;
     std::string current_resource_pack = "";
+    QWebEngineView *web_view;
+
 };
 
 #endif // MAINWINDOW_H

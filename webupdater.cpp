@@ -30,41 +30,16 @@ WebUpdater::~WebUpdater(){
     workerThread.wait();
 }
 
-/* get_news()
- * send web request to get the news
- */
-void WebUpdater::get_news() {
-    // ttr news api
-    // looks like we're getting the latest news for now until i figure out how to live my life
-    QUrl apiUrl = QUrl("https://www.toontownrewritten.com/api/news");
-
-    // set up request
-    QNetworkRequest request(apiUrl);
-    request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
-
-    // send request
-    networkManager->get(request);
-}
-
 /*
  * handle_network_response(reply)
- * 1) news response, then send text to main window immediately because it's not that blocking
- * 2) manifest response, then send to worker because it takes too long
+ * manifest response, then send to worker because it takes too long
  */
 void WebUpdater::handle_network_response(QNetworkReply *reply) {
     if (reply->error()) {
-        emit update_news_request(false, reply->errorString().toStdString());
+        return;
     } else {
         QByteArray data = reply->readAll();
-        QJsonObject json_object = QJsonDocument::fromJson(data).object();
-
-        // "title" is only in news -- since we only update manifest and news, don't think we need to change much for now.
-        if (json_object.contains("title")) {
-            QString str = QString::fromStdString("<p>") + json_object["date"].toString() + QString::fromStdString("</p>") + json_object["body"].toString();
-            emit update_news_request(true, str.toStdString());
-        } else {
-            send_manifest_to_worker(data);
-        }
+        send_manifest_to_worker(data);
     }
 
     reply->deleteLater();
