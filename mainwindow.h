@@ -12,9 +12,21 @@ namespace Ui {
 class MainWindow;
 }
 
+class MainWindowWorker : public QObject {
+    Q_OBJECT
+    QThread workerThread;
+
+signals:
+    void copy_finished();
+
+public slots:
+    void handle_dir_copy(std::string path);
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    QThread workerThread;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -25,15 +37,18 @@ public:
     void read_settings();
     ~MainWindow();
 
+signals:
+    void send_copy_to_worker(std::string path);
 private slots:
     void open_two_factor_dialog();
-    void handleLoginButton();
+    void handle_login_button();
 
     void open_ttr_website();
     void open_toonhq_website();
 
     void update_login_status(std::string str);
     void reset_login();
+    void disable_login();
 
     void update_download_info(double progress, std::string text);
 
@@ -43,6 +58,8 @@ private slots:
 
     void open_resource_packs();
     void set_resource_pack(std::string resource_pack);
+    void handle_worker_complete();
+
 private:
     Ui::MainWindow *ui;
     Authenticator *auth;

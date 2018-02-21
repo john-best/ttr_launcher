@@ -18,9 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowMaximizeButtonHint);
     this->setFixedSize(this->width(), this->height());
 
-    connect(ui->login_button, SIGNAL (clicked()), this, SLOT (handleLoginButton()));
-    connect(ui->username_input, SIGNAL (returnPressed()), this, SLOT (handleLoginButton()));
-    connect(ui->password_input, SIGNAL (returnPressed()), this, SLOT (handleLoginButton()));
+    MainWindowWorker *worker = new MainWindowWorker();
+    worker->moveToThread(&workerThread);
+    connect(&workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+
+    connect(this, SIGNAL(send_copy_to_worker(std::string)), worker, SLOT(handle_dir_copy(std::string)));
+    connect(worker, SIGNAL(copy_finished()), this, SLOT(handle_worker_complete()));
+    workerThread.start();
+
+    connect(ui->login_button, SIGNAL (clicked()), this, SLOT (handle_login_button()));
+    connect(ui->username_input, SIGNAL (returnPressed()), this, SLOT (handle_login_button()));
+    connect(ui->password_input, SIGNAL (returnPressed()), this, SLOT (handle_login_button()));
     connect(ui->ttr_website_button, SIGNAL(clicked()), this, SLOT(open_ttr_website()));
     connect(ui->toonhq_website_button, SIGNAL(clicked()), this, SLOT(open_toonhq_website()));
     connect(ui->resourcepacks_button, SIGNAL(clicked()), this, SLOT(open_resource_packs()));
@@ -47,7 +55,18 @@ MainWindow::MainWindow(QWidget *parent) :
     check_for_updates();
 }
 
-void MainWindow::handleLoginButton() {
+MainWindow::~MainWindow() {
+    workerThread.quit();
+    workerThread.wait();
+
+    delete ui;
+    delete auth;
+    delete webu;
+    delete fileu;
+    delete web_view;
+}
+
+void MainWindow::handle_login_button() {
     ui->login_status_label->setText("");
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
     if (!res) {
@@ -56,9 +75,7 @@ void MainWindow::handleLoginButton() {
     } else {
         qDebug() << "login request successfully sent. waiting on response...";
         update_login_status("Login request sent to server. Waiting...");
-        ui->username_input->setDisabled(true);
-        ui->password_input->setDisabled(true);
-        ui->login_button->setDisabled(true);
+        disable_login();
     }
 }
 
@@ -95,9 +112,7 @@ void MainWindow::update_download_info(double progress, std::string text) {
     if (progress == 100.0) {
         reset_login();
     } else {
-        ui->username_input->setDisabled(true);
-        ui->password_input->setDisabled(true);
-        ui->login_button->setDisabled(true);
+        disable_login();
     }
     ui->download_bar->setValue(progress);
     ui->download_label->setText(QString::fromStdString(text));
@@ -113,14 +128,6 @@ void MainWindow::download_files(std::vector<std::pair<std::string, std::string> 
     } else {
         update_download_info(100.0, "All files are up to date.");
     }
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-    delete auth;
-    delete webu;
-    delete fileu;
 }
 
 void MainWindow::open_ttr_website() {
@@ -139,6 +146,14 @@ void MainWindow::reset_login() {
     ui->username_input->setEnabled(true);
     ui->password_input->setEnabled(true);
     ui->login_button->setEnabled(true);
+    ui->resourcepacks_button->setEnabled(true);
+}
+
+void MainWindow::disable_login() {
+    ui->username_input->setDisabled(true);
+    ui->password_input->setDisabled(true);
+    ui->login_button->setDisabled(true);
+    ui->resourcepacks_button->setDisabled(true);
 }
 
 void MainWindow::read_settings() {
@@ -162,7 +177,6 @@ void MainWindow::save_settings() {
     settings.sync();
 }
 
-
 void MainWindow::open_resource_packs() {
     // TODO: memory leak here, probably.
     ResourcePacks *resource_packs_window = new ResourcePacks(0, current_resource_pack);
@@ -173,6 +187,8 @@ void MainWindow::open_resource_packs() {
 }
 
 void MainWindow::set_resource_pack(std::string resource_pack) {
+
+    // should we check if they're currently equal? if so, do we still want to do something?
     current_resource_pack = resource_pack;
 
     QSettings settings("launcher_settings.ini", QSettings::IniFormat);
@@ -180,12 +196,41 @@ void MainWindow::set_resource_pack(std::string resource_pack) {
     settings.setValue("resource_pack_dir", QString::fromStdString(current_resource_pack));
     settings.sync();
 
-    // TODO
-    // check if files in resources/ match files in content pack directory
-    // if not, delete all files in resources/ and copy files over from content pack directory
-    // if so, do nothing because files are up to date
+    emit send_copy_to_worker(resource_pack);
+    ui->download_label->setText("Applying resource pack changes...");
+    disable_login();
+}
 
-    // if content pack directory is "", delete all files in resources (probably do this first!)
-    // need a worker for this, otherwise blocking is going to happen and we don't want that.
-    // make sure to disable login until finished copying / deleting.
+void MainWindow::handle_worker_complete() {
+    reset_login();
+    ui->download_label->setText("Completed applying resource pack changes.");
+}
+
+void MainWindowWorker::handle_dir_copy(std::string path) {
+
+    // delete everything so we copy every time (this is bad, but it's a solution)
+    QDir dest("resources/");
+    dest.removeRecursively();
+    this->thread()->sleep(1);
+    dest.mkpath(".");
+
+    if (path == "") {
+        emit copy_finished();
+        return;
+    }
+
+    QDir pack("resource_packs/" + QString::fromStdString(path));
+
+    if (!pack.exists() || pack.isEmpty()) {
+        emit copy_finished();
+        return;
+    }
+
+    QStringList pack_files = pack.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    foreach(QString pack_file, pack_files) {
+        // yuck
+        QFile::copy("resource_packs/" + QString::fromStdString(path) + "/" + pack_file, "resources/" + pack_file);
+    }
+
+    emit copy_finished();
 }

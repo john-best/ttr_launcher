@@ -9,19 +9,20 @@ A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), bec
 
 * Username saving on successful login
 * Buttons to Toontown Rewritten's website and also [ToonHQ's website](https://toonhq.org)
-* Only latest news (no photo included, will fix someday)
+* News opens up the TTR website to the latest news.
+* Resource pack support
 * That's pretty much it.
 
 ### What's next? ###
-* QWebView for news rather than QTextBrowser
-* Resource pack support (so you can switch between packs (are there even multiple packs?) before launching)
+* Wait for QWebEngineView to be better for better UI for news
+* Better resource pack support
 * Mac and Linux support
 * A more sophisticated theme/style
 
 ## Compiling ##
 You're going to need a few things to make this work from scratch.
 * Qt (tested on 5.10.1, but may work on others)
-* Some compiler (tested on MSVC2015 x86/x64 and MinGW x86, but may work on others)
+* Some compiler (tested on MSVC2015 x86/x64, but may work on others)
 * A Windows machine
 * Boost C++ Libraries (tested on 1.66.0, but may work on others)
 
@@ -34,4 +35,4 @@ You're going to need the Qt dlls and some OpenSSL dlls for this to work as well.
 I'm not sure I don't think anyone wants to contribute to this but if you do want to just send in a pull request or something.
 
 # A photo #
-![Let's rework this styling someday.](https://i.imgur.com/VrbeCAA.png)
+![Let's rework this styling someday.](https://i.imgur.com/zsLAtXS.png)
