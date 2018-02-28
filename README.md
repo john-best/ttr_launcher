@@ -30,7 +30,7 @@ You're going to need a few things to make this work from scratch.
 ## Running ##
 Probably just run the ttr_launcher.exe file in the same directory as your TTR install. If TTR isn't installed already, the launcher will start downloading a fresh copy of TTR into the directory that ttr_launcher is in.
 
-You're going to need the Qt dlls and some OpenSSL dlls for this to work as well. I'll probably be able to provide all this in a .zip so things will be easy (need to check).
+[Here's](https://github.com/john-best/ttr_launcher/releases/tag/v1.0.0) a .zip of everything you need (Maybe missing the OpenSSL dll files? I'm not sure).
 
 ## Contributing ##
 I'm not sure I don't think anyone wants to contribute to this but if you do want to just send in a pull request or something.
