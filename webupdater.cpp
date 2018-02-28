@@ -124,7 +124,6 @@ void WebUpdaterWorker::worker_handle_manifest(QByteArray data) {
             needs_dl.push_back(dl_pair);
 
         } else {
-
             // the file is up to date so we don't have to do anything.
             std::string s = (filename + " up to date.").toStdString();
             emit worker_update_download_request((++counter/size) * 100, s);
@@ -145,7 +144,8 @@ bool WebUpdaterWorker::file_up_to_date(std::string path, std::string dl_hash) {
     QFileInfo file(QString::fromStdString(path));
 
     // exit early if we the file doesn't exist
-    return file.exists() && file.isFile();
+    if (!file.exists() || !file.isFile())
+        return false;
 
     // check hash
     std::string file_hash = "";
