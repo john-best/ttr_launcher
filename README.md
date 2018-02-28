@@ -15,6 +15,7 @@ A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), bec
 
 ### What's next? ###
 * Wait for QWebEngineView to be better for better UI for news
+* Wait for QWebEngineView to not crash in debug mode
 * Better resource pack support
 * Mac and Linux support
 * A more sophisticated theme/style
@@ -22,7 +23,7 @@ A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), bec
 ## Compiling ##
 You're going to need a few things to make this work from scratch.
 * Qt (tested on 5.10.1, but may work on others)
-* Some compiler (tested on MSVC2015 x86/x64, but may work on others)
+* Some Visual Studio compiler (tested on MSVC2015 x86, but may work on others)
 * A Windows machine
 * Boost C++ Libraries (tested on 1.66.0, but may work on others)
 
