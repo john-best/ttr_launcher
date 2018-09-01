@@ -38,7 +38,7 @@ void FileUpdater::download_files(std::vector<std::pair<std::string, std::string>
 }
 
 void FileUpdater::download_file(std::string filename) {
-    QString url = "https://download.toontownrewritten.com/content/patches/" + QString::fromStdString(filename);
+    QString url = "https://s3.amazonaws.com/download.toontownrewritten.com/patches/" + QString::fromStdString(filename);
     QUrl downloadUrl = QUrl(url);
 
     QNetworkRequest request(downloadUrl);
@@ -52,6 +52,7 @@ void FileUpdater::download_file(std::string filename) {
 void FileUpdater::handle_network_response(QNetworkReply *reply) {
     if (reply->error()) {
        qDebug() << "Error downloading file: " << reply->request().url().fileName();
+       qDebug() << reply->error();
        return;
     }
 
