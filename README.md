@@ -5,6 +5,8 @@ _Yet Another Toontown Rewritten Launcher (name pending)_
 
 A launcher made for [Toontown Rewritten](https://www.toontownrewritten.com), because the current launcher (as of Feb 20, 2018) seems a bit out of date. Let it be known that this was a project to learn more about Qt, so things may not be of the highest quality.
 
+### this project has been dropped. feel free to do as you wish ###
+
 ### What's different? ###
 
 * Username saving on successful login
