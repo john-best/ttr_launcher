@@ -66,6 +66,9 @@ MainWindow::~MainWindow() {
     delete web_view;
 }
 
+/*
+ * handle the login button!
+ */
 void MainWindow::handle_login_button() {
     ui->login_status_label->setText("");
     bool res = auth->login(ui->username_input->text().toStdString(), ui->password_input->text().toStdString());
@@ -79,6 +82,12 @@ void MainWindow::handle_login_button() {
     }
 }
 
+/*
+ * open the two-factor dialog here
+ * i guess there's a memory leak here thanks to me calling new but never free'ing.
+ * i don't think people are going to log into too many accounts without closing the launcher
+ * so it's not the biggest concern (yet)
+ */
 void MainWindow::open_two_factor_dialog() {
     // TODO memory leak here
     two_factor_dialog *tfg = new two_factor_dialog(this);
@@ -89,17 +98,26 @@ void MainWindow::open_two_factor_dialog() {
     tfg->exec();
 }
 
+/*
+ * submit the two factor response
+ */
 void MainWindow::two_factor_submit(QString qstr) {
     ui->login_status_label->setText("Two-factor submitted! Waiting on response...");
     auth->two_factor(qstr.toStdString());
 
 }
 
+/*
+ * load ttr website
+ */
 void MainWindow::load_news() {
-    web_view->load(QUrl("https://www.toontownrewritten.com/news"));
+    web_view->load(QUrl("https://www.toontownrewritten.com/"));
     web_view->show();
 }
 
+/*
+ * start the check for update by updating the manifest (that will call other methods when done)
+ */
 void MainWindow::check_for_updates() {
     ui->download_bar->show();
     ui->download_label->setText("Checking for updates...");
@@ -107,6 +125,10 @@ void MainWindow::check_for_updates() {
     webu->update_manifest();
 }
 
+/*
+ * to keep users notified on what's going on, we'll show them the progress bar
+ * also block people from logging in until all files have been checked and updated
+ */
 void MainWindow::update_download_info(double progress, std::string text) {
 
     if (progress == 100.0) {
@@ -118,6 +140,9 @@ void MainWindow::update_download_info(double progress, std::string text) {
     ui->download_label->setText(QString::fromStdString(text));
 }
 
+/*
+ * basically take response from web updater and send it to file updater
+ */
 void MainWindow::download_files(std::vector<std::pair<std::string, std::string> > dl_filenames) {
     if (dl_filenames.size() > 0) {
         qDebug() << "There are files to be updated... downloading now.";
@@ -130,18 +155,31 @@ void MainWindow::download_files(std::vector<std::pair<std::string, std::string> 
     }
 }
 
+/*
+ * open ttr website in browser
+ */
 void MainWindow::open_ttr_website() {
     QDesktopServices::openUrl(QUrl("https://toontownrewritten.com"));
 }
 
+/*
+ * open toonhq.org website since ttr staff made that website
+ * they say it's unofficial but we know the truth
+ */ 
 void MainWindow::open_toonhq_website() {
     QDesktopServices::openUrl(QUrl("https://toonhq.org"));
 }
 
+/*
+ * update the login status label
+ */ 
 void MainWindow::update_login_status(std::string str) {
     ui->login_status_label->setText(QString::fromStdString(str));
 }
 
+/*
+ * enables all previously locked inputs and buttons
+ */ 
 void MainWindow::reset_login() {
     ui->username_input->setEnabled(true);
     ui->password_input->setEnabled(true);
@@ -149,6 +187,9 @@ void MainWindow::reset_login() {
     ui->resourcepacks_button->setEnabled(true);
 }
 
+/*
+ * disables inputs and buttons during update phase
+ */
 void MainWindow::disable_login() {
     ui->username_input->setDisabled(true);
     ui->password_input->setDisabled(true);
@@ -156,6 +197,9 @@ void MainWindow::disable_login() {
     ui->resourcepacks_button->setDisabled(true);
 }
 
+/*
+ * read launcher settings ini to load in username and current resource pack used
+ */
 void MainWindow::read_settings() {
     QSettings settings("launcher_settings.ini", QSettings::IniFormat);
     settings.beginGroup("Launcher");
@@ -169,6 +213,9 @@ void MainWindow::read_settings() {
     }
 }
 
+/*
+ * save settings to the launcher settings ini
+ */
 void MainWindow::save_settings() {
     QSettings settings("launcher_settings.ini", QSettings::IniFormat);
     settings.beginGroup("Launcher");
@@ -177,6 +224,12 @@ void MainWindow::save_settings() {
     settings.sync();
 }
 
+/*
+ * open the resource pack window
+ * honestly this ui for resource packs is pretty bad but
+ * it works i guess? most people only use one resource pack anyways
+ * so it's unlikely that they'll even use this in the first place
+ */
 void MainWindow::open_resource_packs() {
     // TODO: memory leak here, probably.
     ResourcePacks *resource_packs_window = new ResourcePacks(0, current_resource_pack);
@@ -186,6 +239,9 @@ void MainWindow::open_resource_packs() {
     resource_packs_window->show();
 }
 
+/*
+ * save resource pack settings and copy files over to the resources directory
+ */
 void MainWindow::set_resource_pack(std::string resource_pack) {
 
     // should we check if they're currently equal? if so, do we still want to do something?
@@ -201,18 +257,31 @@ void MainWindow::set_resource_pack(std::string resource_pack) {
     disable_login();
 }
 
+/*
+ * let the user know we've finished copying over the files
+ */
 void MainWindow::handle_worker_complete() {
     reset_login();
     ui->download_label->setText("Completed applying resource pack changes.");
 }
 
+/*
+ * this is where the resource pack copying does its thing
+ */
 void MainWindowWorker::handle_dir_copy(std::string path) {
 
     // delete everything so we copy every time (this is bad, but it's a solution)
     QDir dest("resources/");
     dest.removeRecursively();
+
+    // honestly this doesn't even make sense to me now but i sleep the current thread for 1 second
+    // to let removeRecursively do its thing, but for large resource packs or slow computers this probably
+    // isn't enough time anyways.
+
+    // if removeRecursively() was blocking then things would be easier but oh well.
     this->thread()->sleep(1);
     dest.mkpath(".");
+
 
     if (path == "") {
         emit copy_finished();

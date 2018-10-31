@@ -44,12 +44,20 @@ void ResourcePacks::handle_cancel_clicked() {
     this->close();
 }
 
+/*
+ * when u save, you should only have one resource pack checked
+ * also, i should've just used the radio button lol it does what i want it to do
+ * but for some reason i thought the checkbox was a good idea??
+ * probably because sometimes you don't want any resource pack... but first option could always
+ * just be "None"... that might've been better.
+ *  */
 void ResourcePacks::handle_save_clicked() {
     QStandardItemModel *model = (QStandardItemModel *)ui->tableView->model();
 
     int checked = 0;
     int saved_index = -1;
 
+    // the check for more than 1 checkbox
     for (int i = 0; i < model->rowCount(); i++) {
         Qt::CheckState check_state = static_cast<Qt::CheckState>(model->data(model->index(i, 0), Qt::CheckStateRole).toUInt());
         if (check_state == Qt::Checked) {
@@ -73,6 +81,9 @@ void ResourcePacks::handle_save_clicked() {
     return;
 }
 
+/*
+ * load the resource packs available
+ */
 void ResourcePacks::load_resource_packs(std::string curr_res_pack) {
     QDir resource_packs = ("resource_packs/");
     if (!resource_packs.exists()) {
@@ -81,6 +92,7 @@ void ResourcePacks::load_resource_packs(std::string curr_res_pack) {
 
     resource_packs.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
+    // all folders are a resource pack
     QStringList list;
     list = resource_packs.entryList();
 
@@ -88,6 +100,7 @@ void ResourcePacks::load_resource_packs(std::string curr_res_pack) {
     ui->tableView->setModel(model);
     model->setColumnCount(1);
 
+    // generate the model
     for (QString dir : list) {
         QList<QStandardItem *> items;
         QStandardItem *element = new QStandardItem();
@@ -106,6 +119,9 @@ void ResourcePacks::load_resource_packs(std::string curr_res_pack) {
     }
 }
 
+/*
+ * let the user know that they can only use 1 resource pack!!!
+ */
 void ResourcePacks::too_many_checks() {
     ui->label->setText("You cannot select more than one resource pack.");
 }

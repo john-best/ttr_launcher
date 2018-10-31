@@ -12,21 +12,33 @@ two_factor_dialog::two_factor_dialog(QWidget *parent) :
     p = (MainWindow *)parent;
 }
 
+/*
+ * destructor
+ */
 two_factor_dialog::~two_factor_dialog() {
     delete ui;
 }
 
+/*
+ * submit two factor
+ */
 void two_factor_dialog::two_factor_submit() {
     p->two_factor_submit(ui->two_factor_input->text());
     QDialog::accept();
 }
 
+/*
+ * close two factor
+ */
 void two_factor_dialog::update_close() {
     emit reset_login_request();
     emit reset_login_label_request("");
     this->close();
 }
 
+/*
+ * reject two factor (close but red x/cancel)
+ */
 void two_factor_dialog::reject() {
     emit reset_login_request();
     emit reset_login_label_request("");
